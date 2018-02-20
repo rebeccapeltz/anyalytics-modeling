@@ -31,18 +31,70 @@ a <- colSums(model@xmatrix[[1]] * model@coef[[1]])
 a0 <- (-model@b)
 # see what the model predicts
 pred <- predict(model,myData[,1:10])
+
+
+
 # see what fraction of the model’s predictions match the actual classification
 predictMatchActual <- sum(pred == myData[,11]) / nrow(myData)
 predictMatchActual
 
+namedVector2Str <- function(v)
+{
+  return (paste(names(v), v, sep = ":", collapse = ","))
+}
+
+#function to return C and prediction match
+myfun <- function( rawData,cParam) {
+  #x <-list(a = 1, b = 2)
+  #print(x)
+  #model <- ksvm(predictors,results,type='C-svc',kernel='vanilladot',C=cParam,scaled=TRUE)
+  predictors <- as.matrix(rawData[,1:10])
+  classes <- as.matrix(rawData[,11])
+  model <- ksvm(predictors,classes,type='C-svc',kernel='vanilladot',C=cParam,scaled=TRUE)
+  pred <- predict(model,rawData[,1:10])
+  predEqAct <- sum(pred == rawData[,11]) / nrow(rawData)
+  w <- colSums(predictors[model@SVindex,1:10] * model@coef[[1]])
+  #print(w)
+  #str(w)
+  #print(paste(names(w), w, sep = ":", collapse = ","))
+  print(namedVector2Str(w))
+  a0 <- sum(w*predictors[1,1:10]) - model@b
+  predValues <- list("C" = cParam, "model" = model, "pred" = pred,"accuracy" = predEqAct, "weights"=w, "a0"=a0)
+  #print(predValues$accuracy)
+  return (predValues)
+}
+Q <- myfun( myData,10)
+print (Q$accuracy)
+print (Q$weights)
+
+#try different values of C
+testVals = seq(from = 1, to = 100, by = 10)
+for(x in testVals) {
+  #testC <- x
+  #print(testC)
+  #model <- ksvm(predictors,classes,type='C-svc',kernel='vanilladot',C=testC,scaled=TRUE)
+  #model <- ksvm(predictors,classes,type='C-svc',kernel='vanilladot',C=1,scaled=TRUE)
+  #pred <- predict(model,myData[,1:10])
+  #print(pred)
+  #predEqAct <- sum(pred == myData[,11]) / nrow(myData)
+  #predEqAct
+  #print(x)
+  Q <- myfun(myData, x)
+  X <- sprintf("C: %s, Prediction match: %s", x, Q$accuracy)
+  print(X)
+  X <- sprintf("Weights: %s", namedVector2Str(Q$weights))
+  print(X)
+  X <- sprintf("A0: %s", Q$a0)
+  print(X)
+}
 
 #calculate weights
 #indexing: https://cran.r-project.org/doc/manuals/R-lang.html#Indexing
 w <- colSums(predictors[model@SVindex,1:10] * model@coef[[1]])
-w
+#w
 
 #calculate constant a0
-a0 <- sum(w*predictors[1,1:10]) - model1@b
+#a0 <- sum(w*predictors[1,1:10]) - model1@b
 
 
  #w
