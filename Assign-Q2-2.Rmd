@@ -11,32 +11,32 @@ myData=read.csv("credit.csv",header=TRUE)
 
 # 1st 10 columns are predictors (attributes) and col 11 is the class
 # [,1:10]  all rows, columns 1-10
-predictors <- as.matrix(myData[,1:10])
-classes <- as.matrix(myData[,11])
+#predictors <- as.matrix(myData[,1:10])
+#classes <- as.matrix(myData[,11])
 
 
 # call ksvm. Vanilladot is a simple linear kernel. C is cost of constraints violation
 # scaled = both x and y variables to zero mean and unit variance
-model <- ksvm(predictors,classes,type='C-svc',kernel='vanilladot',C=100,scaled=TRUE)
+#model <- ksvm(predictors,classes,type='C-svc',kernel='vanilladot',C=100,scaled=TRUE)
 #model <- ksvm(as.matrix(myData[,1:10]),as.factor(myData[,11]),type='C-svc',kernel='vanilladot',C=100,scaled=TRUE)
-model
+#model
 #model@xmatrix
 #model@xmatrix[[1]]
 #model@coef[[1]]
-attributes(model)
+#attributes(model)
 
 # calculate a1…am
-a <- colSums(model@xmatrix[[1]] * model@coef[[1]])
+#a <- colSums(model@xmatrix[[1]] * model@coef[[1]])
 # calculate a0
-a0 <- (-model@b)
+#a0 <- (-model@b)
 # see what the model predicts
-pred <- predict(model,myData[,1:10])
+#pred <- predict(model,myData[,1:10])
 
 
 
 # see what fraction of the model’s predictions match the actual classification
-predictMatchActual <- sum(pred == myData[,11]) / nrow(myData)
-predictMatchActual
+#predictMatchActual <- sum(pred == myData[,11]) / nrow(myData)
+#predictMatchActual
 
 namedVector2Str <- function(v)
 {
@@ -45,19 +45,13 @@ namedVector2Str <- function(v)
 
 #function to return C and prediction match
 myfun <- function( rawData,cParam) {
-  #x <-list(a = 1, b = 2)
-  #print(x)
-  #model <- ksvm(predictors,results,type='C-svc',kernel='vanilladot',C=cParam,scaled=TRUE)
   predictors <- as.matrix(rawData[,1:10])
   classes <- as.matrix(rawData[,11])
   model <- ksvm(predictors,classes,type='C-svc',kernel='vanilladot',C=cParam,scaled=TRUE)
   pred <- predict(model,rawData[,1:10])
   predEqAct <- sum(pred == rawData[,11]) / nrow(rawData)
   w <- colSums(predictors[model@SVindex,1:10] * model@coef[[1]])
-  #print(w)
-  #str(w)
-  #print(paste(names(w), w, sep = ":", collapse = ","))
-  print(namedVector2Str(w))
+  #print(namedVector2Str(w))
   a0 <- sum(w*predictors[1,1:10]) - model@b
   predValues <- list("C" = cParam, "model" = model, "pred" = pred,"accuracy" = predEqAct, "weights"=w, "a0"=a0)
   #print(predValues$accuracy)
@@ -68,17 +62,8 @@ print (Q$accuracy)
 print (Q$weights)
 
 #try different values of C
-testVals = seq(from = 1, to = 100, by = 10)
+testVals = seq(from = 1, to = 100, by = 100)
 for(x in testVals) {
-  #testC <- x
-  #print(testC)
-  #model <- ksvm(predictors,classes,type='C-svc',kernel='vanilladot',C=testC,scaled=TRUE)
-  #model <- ksvm(predictors,classes,type='C-svc',kernel='vanilladot',C=1,scaled=TRUE)
-  #pred <- predict(model,myData[,1:10])
-  #print(pred)
-  #predEqAct <- sum(pred == myData[,11]) / nrow(myData)
-  #predEqAct
-  #print(x)
   Q <- myfun(myData, x)
   X <- sprintf("C: %s, Prediction match: %s", x, Q$accuracy)
   print(X)
@@ -90,7 +75,7 @@ for(x in testVals) {
 
 #calculate weights
 #indexing: https://cran.r-project.org/doc/manuals/R-lang.html#Indexing
-w <- colSums(predictors[model@SVindex,1:10] * model@coef[[1]])
+#w <- colSums(predictors[model@SVindex,1:10] * model@coef[[1]])
 #w
 
 #calculate constant a0
@@ -111,6 +96,10 @@ a0 <- (-model@b)
 
 
 ```
+ Setting default kernel parameters  
+[1] "C: 1, Prediction match: 0.863914373088685"
+[1] "Weights: A1:-0.000510545066663069,A2:-0.010760292280656,A3:-0.00807472438371239,A8:0.00978472125318143,A9:0.501507534390497,A10:-0.00148253018706203,A11:-0.00101059994677716,A12:-0.000274644638037325,A14:-0.210717590139447,A15:558.74010646355"
+[1] "A0: -42.3032665533065"
 
 
 
