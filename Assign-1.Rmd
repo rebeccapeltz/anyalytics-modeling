@@ -1,0 +1,80 @@
+---
+title: "Intro to Analytics Modeling: Assign 1"
+output: html_notebook
+---
+
+```{r}
+library(kernlab)
+
+# read CSV data with header
+myData=read.csv("credit.csv",header=TRUE)
+
+# 1st 10 columns are predictors (attributes) and col 11 is the class
+# [,1:10]  all rows, columns 1-10
+predictors <- as.matrix(myData[,1:10])
+classes <- as.matrix(myData[,11])
+
+
+# call ksvm. Vanilladot is a simple linear kernel. C is cost of constraints violation
+# scaled = both x and y variables to zero mean and unit variance
+model <- ksvm(predictors,classes,type='C-svc',kernel='vanilladot',C=100,scaled=TRUE)
+#model <- ksvm(as.matrix(myData[,1:10]),as.factor(myData[,11]),type='C-svc',kernel='vanilladot',C=100,scaled=TRUE)
+model
+#model@xmatrix
+#model@xmatrix[[1]]
+#model@coef[[1]]
+attributes(model)
+
+# calculate a1…am
+a <- colSums(model@xmatrix[[1]] * model@coef[[1]])
+# calculate a0
+a0 <- (-model@b)
+# see what the model predicts
+pred <- predict(model,myData[,1:10])
+# see what fraction of the model’s predictions match the actual classification
+predictMatchActual <- sum(pred == myData[,11]) / nrow(myData)
+predictMatchActual
+
+
+#calculate weights
+#indexing: https://cran.r-project.org/doc/manuals/R-lang.html#Indexing
+w <- colSums(predictors[model@SVindex,1:10] * model@coef[[1]])
+w
+
+#calculate constant a0
+a0 <- sum(w*predictors[1,1:10]) - model1@b
+
+
+ #w
+ #          A1            A2            A3            A8            A9           A10           A11           A12 
+#-4.660362e-04 -1.405350e-02 -8.168866e-03  1.012922e-02  5.016095e-01 -1.403434e-03  1.291217e-03 -2.668989e-04 
+#          A14           A15 
+#-2.067550e-01  5.583356e+02 
+
+
+#a0 <- sum(w*predictors[1,1:10]) - model@b
+
+
+a0 <- (-model@b)
+
+
+```
+
+
+
+
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
+
+```{r}
+plot(cars)
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file). 
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+
