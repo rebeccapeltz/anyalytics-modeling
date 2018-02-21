@@ -1,13 +1,11 @@
 ---
-title: "Introduction to Modeling Analytics Assign-1-b"
-output: html_notebook
+title: "test"
+output: html_document
 ---
 
-#Using the k-nearest-neighbors classification function kknn contained in the R kknn package,
-#suggest a good value of k, and show how well it classifies that data points in the full data set.
-#Don’t forget to scale the data (scale=TRUE in kknn).
 
-
+# -------------------- Code for Question 2.2 part 3 -----------------------------
+# Clear environment
 
 rm(list = ls())
 
@@ -45,7 +43,7 @@ check_accuracy = function(X){
   for (i in 1:nrow(data)){
 
     # data[-i] means we remove row i of the data when finding nearest neighbors...
-    #...otherwise, it'll be its own nearest neighbor!
+    #...otherwise, it will be its own nearest neighbor!
 
     model=kknn(V11~V1+V2+V3+V4+V5+V6+V7+V8+V9+V10,data[-i,],data[i,],k=X, scale = TRUE) # use scaled data
 
@@ -75,10 +73,14 @@ for (X in 1:20){
 
 acc
 
+
+xaxis = 1:20
+plot(xaxis, acc, type="b")
+#optimum k is 5
+
 ##          [,1]      [,2]      [,3]      [,4]     [,5]      [,6]      [,7]      [,8]
 ##[1,] 0.8149847 0.8149847 0.8149847 0.8149847 0.851682 0.8455657 0.8470948 0.8486239
 ##          [,9]     [,10]    [,11]    [,12]    [,13]    [,14]    [,15]    [,16]    [,17]
 ##[1,] 0.8470948 0.8501529 0.851682 0.853211 0.851682 0.851682 0.853211 0.851682 0.851682
 ##        [,18]     [,19]     [,20]    
 ##[1,] 0.851682 0.8501529 0.8501529
-
